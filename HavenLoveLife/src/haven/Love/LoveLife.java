@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import haven.Love.OnCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,17 +27,17 @@ public class LoveLife extends JavaPlugin{
 	public List<String> chat = new ArrayList<String>();
 	private FileConfiguration customConfig = null;
 	private File customConfigFile = null;
+	public String name = "LoveLife";
+	public String version = "1.0";
+	public boolean used = false;
+
 	
-	public void onEnabled(){
-	
-	log.info("LoveLife Enabled");
+	public void onEnable(){
 	
 		PluginManager pm = getServer().getPluginManager();
 		final FileConfiguration config = this.getConfig();
 		
 		pm.registerEvents(new OnCommand(this), this);
-		pm.registerEvents(new OnQuit(this), this);
-		pm.registerEvents(new OnChat(this), this);
 		
 		getCommand("love").setExecutor(new LoveLifeCMD(this));
 		
@@ -50,6 +51,8 @@ public class LoveLife extends JavaPlugin{
 		config.options().copyDefaults(true);
 		saveConfig();
 		saveCustomConfig();
+		
+		log.info("LoveLife Enabled");
 		
 		if(setupEconomy().booleanValue())
 		{

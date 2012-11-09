@@ -24,36 +24,21 @@ public class LoveLifeCMD implements CommandExecutor{
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String arg, String[] args)
 	{
-		Player player = null;
-
-	    if ((sender instanceof Player))
-	    {
-	      player = (Player)sender;
-	    } else {
-	    	sender.sendMessage(ChatColor.RED + "Sorry, but you're alone.");
-	    }
-
-
-		File file = new File(plugin.getDataFolder(), "data.yml");
+		Player player = (Player)sender;
+		
+		File file = new File(plugin.getDataFolder(), "Data.yml");
 		if(file.exists())
 		{
 			partners = plugin.getCustomConfig().getStringList("partners");
 		}
 
-	    if(player.hasPermission("love.*"))
-	    {
-	    	player.hasPermission("love.cost");
-	    	player.hasPermission("love.marry");
-	    	player.hasPermission("love.love");
-	    	player.hasPermission("love.list");
-	    	player.hasPermission("love.chat");
-	    }
-
+	    player.hasPermission("love.*");
+	    
 	    if(args[0].equals("accept"))
 	    {
 	    	if(args.length == 2)
 	    	{
-	    		if(!player.hasPermission("love.marry"))
+	    		if(!player.hasPermission("love.*"))
 	    		{
 	    			player.sendMessage(ChatColor.RED + this.NoPerm);
 	    			return true;
@@ -81,7 +66,7 @@ public class LoveLifeCMD implements CommandExecutor{
 
 	    else if(args[0].equals("cost"))
 	    {
-    		if(!player.hasPermission("love.cost"))
+    		if(!player.hasPermission("love.*"))
     		{
     			player.sendMessage(ChatColor.RED + this.NoPerm);
     			return true;
@@ -92,7 +77,7 @@ public class LoveLifeCMD implements CommandExecutor{
 	    
 	    else if(args[0].equals("list"))
 	    {
-    		if(!player.hasPermission("love.list"))
+    		if(!player.hasPermission("love.*"))
     		{
     			player.sendMessage(ChatColor.RED + this.NoPerm);
     			return true;
@@ -102,7 +87,7 @@ public class LoveLifeCMD implements CommandExecutor{
 
 	    else if(args[0].equals("love"))
 	    {
-	    	if(!player.hasPermission("love.love"))
+	    	if(!player.hasPermission("love.*"))
     		{
     			player.sendMessage(ChatColor.RED + this.NoPerm);
     			return true;
@@ -128,34 +113,20 @@ public class LoveLifeCMD implements CommandExecutor{
 	    }
 
 	    
-	    else if(args[0].equals("chat"))
-	    {
-	    	if(!player.hasPermission("love.chat"))
-    		{
-    			player.sendMessage(ChatColor.RED + this.NoPerm);
-    			return true;
-    		}
-	    	if(!plugin.people.contains(plugin.getCustomConfig().getString("Married." + player.getName())))
-	    	{
-	    		player.sendMessage(ChatColor.RED + this.po);
-	    		return true;
-	    	}
-	    	this.chat(player);
-	    }
 		else if(args.length == 1)
 		{
-			if(args[0].equals(sender.getName()))
+			if(args[0].contains(sender.getName()))
 			{
 				sender.sendMessage(ChatColor.RED + "You may not marry yourself!");
 				return true;
 			}
-    		if(!player.hasPermission("love.marry"))
+    		if(!player.hasPermission("love.*"))
     		{
     			player.sendMessage(ChatColor.RED + this.NoPerm);
     			return true;
     		}
 			Player oPlayer = null;
-			if(plugin.people.contains(args[0]))
+			if(plugin.people.contains(args[0].equalsIgnoreCase(args[0])))
 			{
 				oPlayer = Bukkit.getServer().getPlayer(args[0]);
 			}else
@@ -240,13 +211,13 @@ public class LoveLifeCMD implements CommandExecutor{
 
 	public void Cost(Player player)
 	{	
-		player.sendMessage(ChatColor.GREEN + "Marriage: " + "$" + plugin.getConfig().getInt("money.marriage"));
-		player.sendMessage(ChatColor.GREEN + "Divorce: " + "$" + plugin.getConfig().getInt("money.divorce"));
+		player.sendMessage(ChatColor.GREEN + "Marriage: " + "$" + plugin.getConfig().getInt("marriage.cost"));
+		player.sendMessage(ChatColor.GREEN + "Divorce: " + "$" + plugin.getConfig().getInt("divorce.cost"));
 	}
 	
 	public void showList(Player player)
 	{	
-		player.sendMessage(ChatColor.RED + "========= Married Couples =========");
+		player.sendMessage(ChatColor.GOLD + "========= Married Couples =========");
 
 		for(String partner : plugin.getCustomConfig().getStringList("partners"))
 		{
@@ -256,7 +227,7 @@ public class LoveLifeCMD implements CommandExecutor{
 
 	public void divorce(Player player, String opname)
 	{
-		if(plugin.getConfig().getInt("marriage.cost") != 0)
+		if(plugin.getConfig().getInt("divorce.cost") != 0)
 		{
 			if(plugin.buyDivorce(player, plugin.getConfig().getInt("divorce.cost")))
 			{
@@ -265,7 +236,7 @@ public class LoveLifeCMD implements CommandExecutor{
 			{
 				return;
 			}
-			plugin.getConfig().getInt("marriage.cost");
+			plugin.getConfig().getInt("divorce.cost");
 		}
 		String pname = player.getName();
 		plugin.getCustomConfig().set("Married." + pname, "");
@@ -291,24 +262,5 @@ public class LoveLifeCMD implements CommandExecutor{
 		Bukkit.getServer().broadcastMessage(div);
 	}
 
-
-	public void chat(Player player)
-	{
-		String pname = player.getName();
-		if(!plugin.chat.contains(pname))
-		{
-			plugin.chat.add(pname);
-			player.sendMessage(ChatColor.GREEN + "You have entered marry chat mode!");
-		}
-		else if(plugin.chat.contains(pname))
-		{
-			plugin.chat.remove(pname);
-			player.sendMessage(ChatColor.GREEN + "You have left marry chat mode!");
-		}else
-		{
-			plugin.chat.add(pname);
-			player.sendMessage(ChatColor.GREEN + "You have entered marry chat mode!");
-		}
-	}
 
 }
