@@ -22,9 +22,8 @@ public class LoveLife extends JavaPlugin{
 
 	public static Economy economy = null;
 	public Logger log = Logger.getLogger("Minecraft");
-	public List<String> part = new ArrayList<String>();
+	private List<String> part = new ArrayList<String>();
 	public List<String> people = new ArrayList<String>();
-	public List<String> chat = new ArrayList<String>();
 	private FileConfiguration customConfig = null;
 	private File customConfigFile = null;
 	public String name = "LoveLife";
@@ -42,8 +41,8 @@ public class LoveLife extends JavaPlugin{
 		getCommand("love").setExecutor(new LoveLifeCMD(this));
 		
 		config.options().header("Configuration file for Lovelife");
-		config.addDefault("Divorce Message", "%player_1% has divorced with %player_2%");
-		config.addDefault("Marriage Message", "%player_1% has married with %player_2%");
+		config.addDefault("Divorce_Message", "%player_1% has divorced with %player_2%");
+		config.addDefault("Marriage_Message", "%player_1% has married with %player_2%");
 		config.addDefault("marriage.cost", 0);
 		config.addDefault("divorce.cost", 0);
 		getCustomConfig().addDefault("partners", part);
@@ -64,6 +63,7 @@ public class LoveLife extends JavaPlugin{
 		}
 		
 }	
+
 	public void reloadCustomConfig()
 	{
 		if (customConfigFile == null)
@@ -163,7 +163,7 @@ public class LoveLife extends JavaPlugin{
 	// This sets up the economy via vault
 	private Boolean setupEconomy()
 	{
-		Plugin vault = getServer().getPluginManager().getPlugin("vault");
+		Plugin vault = getServer().getPluginManager().getPlugin("Vault");
 		if(vault == null)
 		{
 			return Boolean.valueOf(false);

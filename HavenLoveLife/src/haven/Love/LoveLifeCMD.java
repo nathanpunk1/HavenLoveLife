@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import haven.Love.LoveLife;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -40,21 +41,21 @@ public class LoveLifeCMD implements CommandExecutor{
 	    	{
 	    		if(!player.hasPermission("love.*"))
 	    		{
-	    			player.sendMessage(ChatColor.RED + this.NoPerm);
+	    			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
 	    			return true;
 	    		}
 	    		Player oPlayer = null;
-	    		if(plugin.people.contains(args[1]))
+	    		if(plugin.people.contains(args[1].toLowerCase()))
 	    		{
-	    			oPlayer = Bukkit.getServer().getPlayer(args[1]); 
+	    			oPlayer = Bukkit.getServer().getPlayer(args[1].toLowerCase()); 
 	    		}else
 	    		{
-	    			player.sendMessage(ChatColor.RED + "That player does not exist!");
+	    			player.sendMessage(ChatColor.DARK_RED + "That player does not exist!");
 	    			return true;
 	    		}
 	    		if(args[1] == player.getName())
 	    		{
-	    			player.sendMessage(ChatColor.RED + "You may not marry yourself!");
+	    			player.sendMessage(ChatColor.DARK_RED + "You may not marry yourself!");
 	    			return true;
 	    		}else
 	    		this.Accept(player, oPlayer);
@@ -63,12 +64,42 @@ public class LoveLifeCMD implements CommandExecutor{
 	    		player.sendMessage("Invalid useage: /love accept <sender>");
 	    	}
 	    }
+	    
+	    else if(args[0].equals("decline"))
+	    {
+	    	if(args.length == 2)
+	    	{
+	    		if(!player.hasPermission("love.*"))
+	    		{
+	    			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
+	    			return true;
+	    		}
+	    		Player oPlayer = null;
+	    		if(plugin.people.contains(args[1].toLowerCase()))
+	    		{
+	    			oPlayer = Bukkit.getServer().getPlayer(args[1].toLowerCase()); 
+	    		}else
+	    		{
+	    			player.sendMessage(ChatColor.DARK_RED + "That player does not exist!");
+	    			return true;
+	    		}
+	    		if(args[1] == player.getName())
+	    		{
+	    			player.sendMessage(ChatColor.DARK_RED + "You may not marry yourself!");
+	    			return true;
+	    		}else
+	    		this.Decline(player, oPlayer);
+	    	}else
+	    	{
+	    		player.sendMessage("Invalid useage: /love decline <sender>");
+	    	}
+	    }
 
 	    else if(args[0].equals("cost"))
 	    {
     		if(!player.hasPermission("love.*"))
     		{
-    			player.sendMessage(ChatColor.RED + this.NoPerm);
+    			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
     			return true;
     		}
 	    	this.Cost(player);
@@ -79,7 +110,7 @@ public class LoveLifeCMD implements CommandExecutor{
 	    {
     		if(!player.hasPermission("love.*"))
     		{
-    			player.sendMessage(ChatColor.RED + this.NoPerm);
+    			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
     			return true;
     		}
 	    	this.showList(player);
@@ -89,7 +120,7 @@ public class LoveLifeCMD implements CommandExecutor{
 	    {
 	    	if(!player.hasPermission("love.*"))
     		{
-    			player.sendMessage(ChatColor.RED + this.NoPerm);
+    			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
     			return true;
     		}
 	    	if(plugin.people.contains(plugin.getCustomConfig().getString("Married." + player.getName())))
@@ -97,7 +128,7 @@ public class LoveLifeCMD implements CommandExecutor{
 	    		Bukkit.getServer().getPlayer(plugin.getCustomConfig().getString("Married." + player.getName()));
 	    	}else
 	    	{
-	    		player.sendMessage(ChatColor.RED + this.po);
+	    		player.sendMessage(ChatColor.DARK_RED + this.po);
 	    		return true;
 	    	}
 	    }
@@ -107,36 +138,64 @@ public class LoveLifeCMD implements CommandExecutor{
     		String opname = plugin.getCustomConfig().getString("Married." + player.getName());
     		if(opname == "" || opname == null)
     		{
-    			player.sendMessage(ChatColor.RED + "You are not married!");
+    			player.sendMessage(ChatColor.DARK_RED + "You are not married!");
+    			return true;
     		}
     		this.divorce(player, opname);
 	    }
-
 	    
 		else if(args.length == 1)
 		{
-			if(args[0].contains(sender.getName()))
+			if(args[0].equalsIgnoreCase(sender.getName()))
 			{
-				sender.sendMessage(ChatColor.RED + "You may not marry yourself!");
+				sender.sendMessage(ChatColor.DARK_RED + "You may not marry yourself!");
 				return true;
 			}
     		if(!player.hasPermission("love.*"))
     		{
-    			player.sendMessage(ChatColor.RED + this.NoPerm);
+    			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
     			return true;
     		}
 			Player oPlayer = null;
-			if(plugin.people.contains(args[0].equalsIgnoreCase(args[0])))
+			if(plugin.people.contains(args[0].toLowerCase()))
 			{
-				oPlayer = Bukkit.getServer().getPlayer(args[0]);
+				oPlayer = Bukkit.getServer().getPlayer(args[0].toLowerCase());
 			}else
 			{
-				player.sendMessage(ChatColor.RED + "That player does not exist!");
+				player.sendMessage(ChatColor.DARK_RED + "That player does not exist!");
 				return true;
 			}
 			this.SendRequest(player, oPlayer);
 		}
 		return true;
+	}
+	
+	public void Decline(Player player, Player oPlayer){
+		
+	
+	String pname = player.getName();
+	String opname = oPlayer.getName();
+	
+	if(!reqs.contains(pname))
+	{
+		player.sendMessage(ChatColor.DARK_RED + "You dont have a marry request!");
+		return;
+	}
+	if(!reqs.contains(opname))
+	{
+		player.sendMessage(ChatColor.DARK_RED + "You dont have a marry request from that player!");
+		return;
+	}
+	if(reqs.contains(opname))
+	{
+		reqs.remove(opname);
+	}
+	if(reqs.contains(pname))
+	{
+		reqs.remove(pname);
+	}
+	player.sendMessage(ChatColor.RED + "Request denied" + " " + opname);
+	oPlayer.sendMessage(ChatColor.RED + "Request denied" + " " + pname);
 	}
 	
 	public void SendRequest(Player player, Player oPlayer)
@@ -146,12 +205,12 @@ public class LoveLifeCMD implements CommandExecutor{
 
 		if(plugin.getCustomConfig().getString("Married." + pname) != null && plugin.getCustomConfig().getString("Married." + pname) != "")
 		{
-			player.sendMessage(ChatColor.RED + "You are already Married!");
+			player.sendMessage(ChatColor.DARK_RED + "You are already Married!");
 			return;
 		}
 		if(plugin.getCustomConfig().getString("Married." + opname) != null && plugin.getCustomConfig().getString("Married." + opname) != "")
 		{
-			player.sendMessage(ChatColor.RED + opname + " is already Married!");
+			player.sendMessage(ChatColor.DARK_RED + opname + " is already Married!");
 			return;
 		}
 		if(plugin.getConfig().getInt("marriage.cost") != 0)
@@ -178,22 +237,22 @@ public class LoveLifeCMD implements CommandExecutor{
 		
 		if(plugin.getCustomConfig().getString("Married." + pname) != null && plugin.getCustomConfig().getString("Married." + pname) != "")
 		{
-			player.sendMessage(ChatColor.RED + "You are already Married!");
+			player.sendMessage(ChatColor.DARK_RED + "You are already Married!");
 			return;
 		}
 		if(plugin.getCustomConfig().getString("Married." + opname) != null && plugin.getCustomConfig().getString("Married." + opname) != "")
 		{
-			player.sendMessage(ChatColor.RED + opname + "is already Married!");
+			player.sendMessage(ChatColor.DARK_RED + opname + "is already Married!");
 			return;
 		}
 		if(!reqs.contains(pname))
 		{
-			player.sendMessage(ChatColor.RED + "You dont have a marry request!");
+			player.sendMessage(ChatColor.DARK_RED + "You dont have a marry request!");
 			return;
 		}
 		if(!reqs.contains(opname))
 		{
-			player.sendMessage(ChatColor.RED + "You dont have a marry request from that player!");
+			player.sendMessage(ChatColor.DARK_RED + "You dont have a marry request from that player!");
 			return;
 		}
 		plugin.getCustomConfig().set("Married." + pname, opname);
@@ -202,7 +261,7 @@ public class LoveLifeCMD implements CommandExecutor{
 		plugin.saveCustomConfig();
 		player.sendMessage(ChatColor.GREEN + this.Marry + " " + opname);
 		oPlayer.sendMessage(ChatColor.GREEN + this.Marry + " " + pname);
-		String message = plugin.getConfig().getString("marry-message");
+		String message = plugin.getConfig().getString("Marriage_Message");
 		message = message.replaceAll("%player_1%", pname);
 		message = message.replaceAll("%player_2%", opname);
 		message = plugin.fixColors(message);
@@ -217,11 +276,11 @@ public class LoveLifeCMD implements CommandExecutor{
 	
 	public void showList(Player player)
 	{	
-		player.sendMessage(ChatColor.GOLD + "========= Married Couples =========");
+		player.sendMessage(ChatColor.GOLD + ".oOo.---------" + ChatColor.YELLOW + "Married Couples" + ChatColor.GOLD + "----------.oOo.");
 
-		for(String partner : plugin.getCustomConfig().getStringList("partners"))
+		for(String partners : plugin.getCustomConfig().getStringList("partners"))
 		{
-			player.sendMessage(partner + " + " + plugin.getCustomConfig().getString("Married." + partner));
+			player.sendMessage(partners + " + " + plugin.getCustomConfig().getString("Married." + partners));
 		}
 	}
 
@@ -231,7 +290,7 @@ public class LoveLifeCMD implements CommandExecutor{
 		{
 			if(plugin.buyDivorce(player, plugin.getConfig().getInt("divorce.cost")))
 			{
-				player.sendMessage(ChatColor.GREEN + "$" + plugin.getConfig().getInt("marriage.cost") + " has been taken form your balance!");
+				player.sendMessage(ChatColor.GREEN + "$" + plugin.getConfig().getInt("divorce.cost") + " has been taken form your balance!");
 			}else
 			{
 				return;
@@ -255,7 +314,7 @@ public class LoveLifeCMD implements CommandExecutor{
 			plugin.saveCustomConfig();
 		}
 		player.sendMessage(ChatColor.GREEN + "You have divorced your partner");
-		String div = plugin.getConfig().getString("Divorce Message");
+		String div = plugin.getConfig().getString("Divorce_Message");
 		div = div.replaceAll("%player_1%", pname);
 		div = div.replaceAll("%player_2%", opname);
 		div = plugin.fixColors(div);
