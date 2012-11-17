@@ -31,6 +31,14 @@ public class OnCommand implements Listener{
 			player.sendMessage(ChatColor.DARK_AQUA + "/love decline <sender>" + ChatColor.GRAY +  " - Decline A Marriage Request");
 			player.sendMessage(ChatColor.DARK_AQUA + "/love divorce" + ChatColor.GRAY +  " - Divorce You Partner");
 			player.sendMessage(ChatColor.DARK_AQUA + "/love cost" + ChatColor.GRAY +  " - The Cost Of Marriage/Divorce");
+			if(plugin.getCustomConfig().getString("Married." + pname) != null && plugin.getCustomConfig().getString("Married." + pname) != "")
+			{
+				player.sendMessage(ChatColor.DARK_AQUA + "Married :" + ChatColor.GRAY + "Yes");
+			}
+			else
+			{
+				player.sendMessage(ChatColor.DARK_AQUA + "Married :" + ChatColor.GRAY + "No");
+			}
 			event.setCancelled(true);
 			
 		}

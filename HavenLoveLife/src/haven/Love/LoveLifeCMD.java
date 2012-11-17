@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 
@@ -22,6 +23,8 @@ public class LoveLifeCMD implements CommandExecutor{
 	private String NoPerm = "You dont have Permission!";
 	private String Marry = "You Are Now Married Congratulations";
 	private String po = "Your partner is offline!";
+	private FileConfiguration customConfig = null;
+	private File customConfigFile = null;
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String arg, String[] args)
 	{
@@ -113,7 +116,7 @@ public class LoveLifeCMD implements CommandExecutor{
     			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
     			return true;
     		}
-	    	this.showList(player);
+	    	this.showList(player, sender);
 	    }
 
 	    else if(args[0].equals("love"))
@@ -143,6 +146,15 @@ public class LoveLifeCMD implements CommandExecutor{
     		}
     		this.divorce(player, opname);
 	    }
+	    else if(args[0].equals("reloadcfg"))
+	    {
+	    	if(!player.isOp())
+    		{
+    			player.sendMessage(ChatColor.DARK_RED + this.NoPerm);
+    			return true;
+    		}
+	    	this.reload(player, sender);
+	    }
 	    
 		else if(args.length == 1)
 		{
@@ -170,6 +182,18 @@ public class LoveLifeCMD implements CommandExecutor{
 		return true;
 	}
 	
+	private void reload(Player player, CommandSender sender) 
+	{
+		plugin.reloadConfig();
+		plugin.reloadCustomConfig();
+		if(customConfigFile == null && customConfig == null)
+		{
+			sender.sendMessage("No config file found fail to reload");
+		}
+		sender.sendMessage("Config reloaded");
+		
+	}
+
 	public void Decline(Player player, Player oPlayer){
 		
 	
@@ -224,7 +248,7 @@ public class LoveLifeCMD implements CommandExecutor{
 			}
 		}
 		player.sendMessage(ChatColor.GREEN + "Request has been sent!");
-		oPlayer.sendMessage(ChatColor.GREEN + pname + " requested you to marry, type: " + ChatColor.LIGHT_PURPLE + "/love accept <sender>" + ChatColor.GREEN + " to accept");
+		oPlayer.sendMessage(ChatColor.GREEN + pname + " wants to marry you type: " + ChatColor.LIGHT_PURPLE + "/love accept <sender>" + ChatColor.GREEN + " to accept");
 		reqs.add(opname);
 		reqs.add(pname);
 	}
@@ -274,13 +298,12 @@ public class LoveLifeCMD implements CommandExecutor{
 		player.sendMessage(ChatColor.GREEN + "Divorce: " + "$" + plugin.getConfig().getInt("divorce.cost"));
 	}
 	
-	public void showList(Player player)
+	public void showList(Player player, CommandSender sender)
 	{	
 		player.sendMessage(ChatColor.GOLD + ".oOo.---------" + ChatColor.YELLOW + "Married Couples" + ChatColor.GOLD + "----------.oOo.");
-
-		for(String partners : plugin.getCustomConfig().getStringList("partners"))
+		for(String partner : plugin.getCustomConfig().getStringList("partners"))
 		{
-			player.sendMessage(partners + " + " + plugin.getCustomConfig().getString("Married." + partners));
+			player.sendMessage(partner + " + " + plugin.getCustomConfig().getString("Married." + partner));
 		}
 	}
 
@@ -298,8 +321,8 @@ public class LoveLifeCMD implements CommandExecutor{
 			plugin.getConfig().getInt("divorce.cost");
 		}
 		String pname = player.getName();
-		plugin.getCustomConfig().set("Married." + pname, "");
-		plugin.getCustomConfig().set("Married." + opname, "");
+		plugin.getCustomConfig().set("Married." + pname, null);
+		plugin.getCustomConfig().set("Married." + opname, null);
 		plugin.saveCustomConfig();
 		if(partners.contains(opname))
 		{
